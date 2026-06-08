@@ -439,6 +439,18 @@ body {
 }
 .flow-arrow { text-align: center; font-size: 12px; color: var(--text-muted); line-height: 1; }
 
+/* Actual screenshot images */
+.work-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  aspect-ratio: 16/9;
+  transition: transform .3s;
+}
+.work-card:hover .work-thumb img { transform: scale(1.04); }
+.work-card.featured .work-thumb img { aspect-ratio: 16/8; }
+
 /* Overlay on hover */
 .work-overlay {
   position: absolute;
@@ -536,6 +548,7 @@ body {
 /* ============================================================
    CONTACT
    ============================================================ */
+.contact-center { text-align: center; }
 .contact-title { color: #fff; margin-bottom: 16px; }
 .contact-sub {
   color: rgba(255,255,255,.82);
