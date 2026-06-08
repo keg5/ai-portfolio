@@ -372,7 +372,12 @@ body {
 .work-thumb {
   position: relative;
   overflow: hidden;
+  aspect-ratio: 16/9;   /* コンテナ側で比率を確定 */
+  width: 100%;
+  background: var(--bg-alt);
 }
+.work-card.featured .work-thumb { aspect-ratio: 16/8; }
+
 .mock-screen {
   width: 100%;
   aspect-ratio: 16/9;
@@ -444,12 +449,13 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
   display: block;
-  aspect-ratio: 16/9;
+  position: absolute;  /* 親の aspect-ratio コンテナを基準に stretch */
+  inset: 0;
   transition: transform .3s;
 }
 .work-card:hover .work-thumb img { transform: scale(1.04); }
-.work-card.featured .work-thumb img { aspect-ratio: 16/8; }
 
 /* Overlay on hover */
 .work-overlay {
