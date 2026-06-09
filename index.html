@@ -6,6 +6,9 @@
 
   <!-- SEO -->
   <meta name="description" content="Claude / GPT-4o / Gemini を使ったAI開発の成果物をまとめたポートフォリオ">
+  <!-- [追加] canonical / robots -->
+  <link rel="canonical" href="https://keg5.github.io/ai-portfolio/">
+  <meta name="robots" content="index, follow">
 
   <!-- OGP -->
   <meta property="og:title" content="AI Builder Portfolio">
@@ -13,19 +16,20 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://keg5.github.io/ai-portfolio/">
   <meta property="og:image" content="https://keg5.github.io/ai-portfolio/images/f869fc4b-2576-4129-bdd2-37b44a31147a.webp">
+  <!-- [追加] Twitter/X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI Builder Portfolio">
+  <meta name="twitter:description" content="LLM・エージェント・画像生成・自動化のAIプロダクトを紹介">
+  <meta name="twitter:image" content="https://keg5.github.io/ai-portfolio/images/f869fc4b-2576-4129-bdd2-37b44a31147a.webp">
 
-  <!-- [S-3] Content Security Policy
-       - default-src 'self'
-       - style-src: Google Fonts + インラインスタイル（style属性除去後は unsafe-inline 不要だが互換のため維持）
-       - font-src: Google Fonts CDN
-       - script-src: 自サーバーのみ (defer で読み込む main.js)
-       - img-src: 自サーバー + data URI
-       - connect-src: 'self' のみ（外部 API 呼び出しなし）
+  <!-- [SEC-01 修正] CSP から unsafe-inline を除去。
+       Google Fonts はすべて外部 CSS として読み込むためインラインスタイル不要。
+       HTML 内の style="" 属性はすべて CSS クラスに移行済み。
   -->
   <meta http-equiv="Content-Security-Policy"
     content="
       default-src 'self';
-      style-src  'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com;
+      style-src  'self' https://fonts.googleapis.com https://fonts.gstatic.com;
       font-src   https://fonts.gstatic.com;
       script-src 'self';
       img-src    'self' data:;
@@ -45,6 +49,8 @@
         rel="stylesheet" crossorigin="anonymous">
 
   <link rel="stylesheet" href="style.css">
+  <!-- [PERF-01] LCP 画像（featured card 1枚目）を preload -->
+  <link rel="preload" as="image" href="images/7f0d46ee-4db4-4c9b-8f7f-7f5a3e529759.webp">
 </head>
 <body>
 
@@ -68,7 +74,8 @@
         <span></span><span></span><span></span>
       </button>
     </div>
-    <div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="モバイルメニュー">
+    <!-- [A11Y-02] 閉じている間は aria-hidden でスクリーンリーダーから隠す -->
+    <div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="モバイルメニュー" aria-hidden="true">
       <ul role="list">
         <li><a href="#works"   class="mobile-link">Works</a></li>
         <li><a href="#about"   class="mobile-link">About</a></li>
@@ -145,13 +152,14 @@
         <article class="work-card featured fade-up" data-category="design"
                  aria-label="De Castelli — エディトリアル型Webデザイン">
           <div class="work-thumb">
-            <!-- [Q-1] 実際のスクリーンショット画像に差し替え -->
+            <!-- [PERF-01] featured 1枚目は LCP 対象のため eager + fetchpriority=high -->
             <img
               src="images/7f0d46ee-4db4-4c9b-8f7f-7f5a3e529759.webp"
               alt="De Castelli — 黒背景に大型タイポグラフィと3Dオブジェクトを組み合わせたエディトリアル型Webサイトのスクリーンショット"
               width="1280"
               height="776"
-              loading="lazy"
+              loading="eager"
+              fetchpriority="high"
               decoding="async"
             >
             <div class="work-overlay" aria-hidden="true">
@@ -308,8 +316,8 @@
         AIプロダクトのご相談・お問い合わせはお気軽にどうぞ。<br>
         スクリーンショットや成果物に関するお問い合わせも歓迎です。
       </p>
-      <!-- [S-1] mailto は実際のアドレスに変更してください -->
-      <a href="mailto:sol.aprender.75456@gmail.com" class="btn-white">
+      <!-- [SEC-02] メールアドレスを HTML エンティティでエンコードしてボットクローラーから保護 -->
+      <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#111;&#108;&#46;&#97;&#112;&#114;&#101;&#110;&#100;&#101;&#114;&#46;&#55;&#53;&#52;&#53;&#54;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;" class="btn-white">
         メールでお問い合わせ <span class="material-icons" aria-hidden="true">call_made</span>
       </a>
     </div>
