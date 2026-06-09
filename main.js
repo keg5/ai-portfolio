@@ -3,31 +3,32 @@
    ============================================================ */
 
 /* ---- Navbar scroll shadow ---- */
-// [BUG-01] null チェックを追加
 const navbar = document.getElementById('navbar');
 if (navbar) {
+  // passive: true でスクロールスレッドをブロックしない
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 10);
-  });
+  }, { passive: true });
 }
 
 /* ---- Hamburger menu ---- */
-// [BUG-01] null チェックを追加
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
 
 if (hamburger && mobileMenu) {
+  // メニューを閉じる処理を1か所に集約（Reuse / Altitude）
+  function closeMobileMenu() {
+    mobileMenu.setAttribute('aria-hidden', 'true');
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.setAttribute('aria-label', 'メニューを開く');
+  }
+
   hamburger.addEventListener('click', () => {
-    const isOpen = mobileMenu.classList.toggle('open');
-
-    // [A11Y-02] aria-hidden をメニュー開閉に同期
-    mobileMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-
-    // aria-expanded / aria-label をボタンに同期
-    hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    // aria-hidden を唯一の真実源として開閉管理（Altitude: .open クラス不要）
+    const isOpen = mobileMenu.getAttribute('aria-hidden') === 'true';
+    mobileMenu.setAttribute('aria-hidden', String(!isOpen));
+    hamburger.setAttribute('aria-expanded', String(isOpen));
     hamburger.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
-
-    // [A11Y-01] メニューを開いたらフォーカスを先頭リンクへ移動
     if (isOpen) {
       const firstLink = mobileMenu.querySelector('a');
       if (firstLink) firstLink.focus();
@@ -35,12 +36,7 @@ if (hamburger && mobileMenu) {
   });
 
   document.querySelectorAll('.mobile-link').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      mobileMenu.setAttribute('aria-hidden', 'true');
-      hamburger.setAttribute('aria-expanded', 'false');
-      hamburger.setAttribute('aria-label', 'メニューを開く');
-    });
+    link.addEventListener('click', closeMobileMenu);
   });
 }
 
@@ -48,21 +44,25 @@ if (hamburger && mobileMenu) {
 const filterTabs = document.querySelectorAll('.filter-tab');
 const workCards  = document.querySelectorAll('.work-card');
 
+// activeTab を変数で追跡して全タブ走査を回避（Efficiency）
+let activeTab = document.querySelector('.filter-tab.active');
+
 filterTabs.forEach(tab => {
   tab.addEventListener('click', () => {
-    filterTabs.forEach(t => t.classList.remove('active'));
+    if (tab === activeTab) return;           // 同じタブは処理不要
+    activeTab?.classList.remove('active');
     tab.classList.add('active');
+    activeTab = tab;
 
     const filter = tab.dataset.filter;
     workCards.forEach(card => {
-      const match = filter === 'all' || card.dataset.category === filter;
-      card.classList.toggle('hidden', !match);
+      card.classList.toggle('hidden', filter !== 'all' && card.dataset.category !== filter);
     });
   });
 });
 
 /* ---- Smooth scroll for nav ---- */
-// [Q-4] href が空文字・不正な場合の安全チェック
+// CSS scroll-behavior: smooth と併用。navbar オフセット補正のため JS 側も維持。
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     const hash = a.getAttribute('href');
@@ -80,7 +80,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 
 /* ---- Fade-up on scroll (IntersectionObserver) ---- */
-// [PERF-02] rootMargin を追加してモバイルでの発火タイミングを改善
 const fadeEls = document.querySelectorAll('.fade-up');
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
@@ -91,6 +90,6 @@ const observer = new IntersectionObserver(entries => {
   });
 }, {
   threshold: 0.15,
-  rootMargin: '0px 0px -50px 0px'  // 要素が少し手前に来たタイミングで発火
+  rootMargin: '0px 0px -50px 0px'
 });
 fadeEls.forEach(el => observer.observe(el));

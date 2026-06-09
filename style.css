@@ -63,18 +63,26 @@ body {
   margin-bottom: 48px;
 }
 
-/* ---- Buttons ---- */
-.btn-primary {
+/* ---- Buttons — .btn ベースクラスで共通プロパティを集約（Reuse） ---- */
+.btn-primary, .btn-ghost, .btn-white {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: var(--accent);
-  color: #fff;
-  padding: 15px 36px;
   border-radius: var(--radius-btn);
   text-decoration: none;
   font-size: 15px;
   font-weight: 700;
+  font-family: inherit;
+}
+/* アイコンサイズを1か所で管理（Reuse） */
+.btn-primary .material-icons,
+.btn-ghost   .material-icons,
+.btn-white   .material-icons { font-size: 18px; }
+
+.btn-primary {
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  padding: 15px 36px;
   transition: background .2s, transform .15s, box-shadow .2s;
   box-shadow: 0 4px 20px rgba(242,21,133,.3);
 }
@@ -83,18 +91,11 @@ body {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
-.btn-primary .material-icons { font-size: 18px; }
 
 .btn-ghost {
-  display: inline-flex;
-  align-items: center;
   gap: 6px;
   color: var(--accent);
   padding: 15px 28px;
-  border-radius: var(--radius-btn);
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 700;
   border: 2px solid var(--accent-light);
   transition: background .2s, border-color .2s;
 }
@@ -104,16 +105,10 @@ body {
 }
 
 .btn-white {
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
   background: #fff;
   color: var(--accent);
   padding: 16px 40px;
-  border-radius: var(--radius-btn);
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 700;
   transition: transform .2s, box-shadow .2s;
   box-shadow: 0 4px 20px rgba(0,0,0,.1);
 }
@@ -121,7 +116,6 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 8px 28px rgba(0,0,0,.15);
 }
-.btn-white .material-icons { font-size: 18px; }
 
 /* ============================================================
    NAV
@@ -130,12 +124,15 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0;
   background: rgba(255,255,255,.95);
-  backdrop-filter: blur(12px);
   z-index: 200;
   border-bottom: 1px solid var(--border);
-  transition: box-shadow .3s;
+  transition: box-shadow .3s, backdrop-filter .3s;
 }
-#navbar.scrolled { box-shadow: 0 2px 16px rgba(242,21,133,.08); }
+/* backdrop-filter はスクロール後のみ有効化（GPU 再描画コスト削減: Efficiency） */
+#navbar.scrolled {
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 16px rgba(242,21,133,.08);
+}
 
 .nav-inner {
   max-width: 1200px;
@@ -208,13 +205,14 @@ body {
   transition: all .3s;
 }
 
+/* aria-hidden を唯一の真実源として表示制御（Altitude: .open クラスを廃止） */
 .mobile-menu {
   display: none;
   background: #fff;
   border-top: 1px solid var(--border);
   padding: 16px 32px 24px;
 }
-.mobile-menu.open { display: block; }
+.mobile-menu[aria-hidden="false"] { display: block; }
 .mobile-menu ul { list-style: none; }
 .mobile-menu ul li + li { border-top: 1px solid var(--border); }
 .mobile-link {
@@ -387,72 +385,6 @@ body {
   background: var(--bg-alt);
 }
 .work-card.featured .work-thumb { aspect-ratio: 16/8; }
-
-.mock-screen {
-  width: 100%;
-  aspect-ratio: 16/9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  transition: transform .3s;
-}
-.work-card:hover .mock-screen { transform: scale(1.03); }
-
-/* Browser chrome mock */
-.mock-browser {
-  background: rgba(255,255,255,.8);
-  border-radius: 10px;
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 4px 20px rgba(0,0,0,.08);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow: hidden;
-}
-.mock-dots { display: flex; gap: 5px; }
-.mock-dots span { width: 9px; height: 9px; border-radius: 50%; display: block; }
-.mock-bar {
-  height: 7px;
-  background: var(--accent);
-  border-radius: 4px;
-  width: 55%;
-  opacity: .5;
-}
-.mock-content { display: flex; gap: 10px; flex: 1; overflow: hidden; }
-.mock-sidebar { width: 30%; display: flex; flex-direction: column; gap: 5px; }
-.mock-main { flex: 1; }
-.mock-line {
-  height: 5px;
-  background: #ddd;
-  border-radius: 3px;
-  width: 100%;
-}
-.mock-line.short { width: 45%; }
-.mock-chat { display: flex; flex-direction: column; gap: 6px; padding: 4px; }
-.chat-bubble {
-  height: 14px;
-  border-radius: 10px;
-  width: 70%;
-}
-.chat-bubble.right  { background: var(--accent); opacity: .5; margin-left: auto; width: 55%; }
-.chat-bubble.left   { background: #e5e5e5; }
-.chat-bubble.short  { width: 35%; }
-.chat-bubble.long   { width: 85%; }
-.mock-code { background: rgba(0,0,0,.05); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
-.code-line { height: 4px; background: rgba(74,144,217,.4); border-radius: 2px; }
-.flow-node {
-  border-radius: 8px;
-  padding: 4px 8px;
-  font-size: 10px;
-  font-weight: 700;
-  text-align: center;
-  color: var(--text);
-}
-.flow-arrow { text-align: center; font-size: 12px; color: var(--text-muted); line-height: 1; }
 
 /* Actual screenshot images */
 .work-thumb img {
